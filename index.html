@@ -1,14 +1,16 @@
 <html>
   <head>
-    <script src="index.js"></script>
+    <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
+    <script src="index.js" charset="utf-8"></script>
     <link rel="stylesheet" href="index.css">
   </head>
   <body>
+    <div class="page-title">Star Trek Fleet Command, visualisateur de journal de bataille d'armada</div>
     <div class="csv-select">
-      <label class="text-center">Choose a STFC armada log file</label>
+        <label class="text-center">Journal d'aramada:</label>
       <input id="csv-file" type="file" accept=".csv" />
     </div>
-    <div class="analysisTable"></div>
+    <div class="logs"></div>
     <div class="license"><a rel="license" target="_blank" href="https://github.com/egb38/armalogs/blob/main/LICENSE">Apache 2.0 License</a></div>
   </body>
 </html>
