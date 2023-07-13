@@ -1,32 +1,44 @@
 var input;
 var logs;
-var analysisTable;
+var divLogs;
 var csvContent = null;
 var list = null;
 var armada_analysis = null;
 
 var analysis = {};
 
+// on load handler
 window.onload = function() {
   input = document.querySelector("input");
-  analysisTable = document.querySelector(".analysisTable");
+  divLogs = document.querySelector(".logs");
   
   input.addEventListener("change", armadaLogAnalysis);    
 }
 
+// main entry point, on file selected
 function armadaLogAnalysis() {
+  // load file in memory
   var csvFile = loadCSV();
   if (csvFile!==null) {
+    // main process
     var data = readCSV(csvFile);
   }
 }
 
+// display processed data
 function displayData(summary, data) {
-  analysisTable.appendChild(createSummary(summary));
-  analysisTable.appendChild(createTable(data));
+  var divLog = document.createElement('div');
+  divLog.setAttribute('class', 'armada-battle');
+  // summary
+  divLog.appendChild(createSummary(summary));
+  // main content
+  divLog.appendChild(createTable(data));
 
+  divLogs.appendChild(divLog);
 }
 
+// summary display generation
+// TODO proper/more extensive I18N
 function createSummary(summary) {
   var summaryTable = document.createElement('table');
   if (summary.result.outcome == "DÉFAITE" || summary.result.outcome == "DEFEAT") {
@@ -56,8 +68,10 @@ function createSummary(summary) {
   return summaryTable;
 }
 
+// analyzed log display generation
 function createTable(tableData) {
   var table = document.createElement('table');
+  table.setAttribute('class', 'armada-battle-log')
   var tableHeader = document.createElement('thead');
   var tableBody = document.createElement('tbody');
   var tableFooter = document.createElement('tfoot');
@@ -106,6 +120,7 @@ function createTable(tableData) {
   return table;
 }
 
+// parse CSV log file
 function parseCSV(csv) {
 
   Papa.parse(csv, {
@@ -153,24 +168,26 @@ function parseCSV(csv) {
 
 
       headers = [];
-      headers.push({"label":"Player", "rowspan":1, "colspan":1});
-      headers.push({"label":results.data[first-1][0], "rowspan":1, "colspan":1});
-      headers.push({"label":results.data[first-1][24] + " 100", "rowspan":1, "colspan":1});
-      headers.push({"label":results.data[first-1][24] + " 50", "rowspan":1, "colspan":1});
-      headers.push({"label":"Attaques", "rowspan":1, "colspan":1});
-      headers.push({"label":"Coups critiques", "rowspan":1, "colspan":1});
-      headers.push({"label":results.data[first-1][12], "rowspan":1, "colspan":1});
-      headers.push({"label":results.data[first-1][13], "rowspan":1, "colspan":1});
-      headers.push({"label":results.data[first-1][14], "rowspan":1, "colspan":1});
-      headers.push({"label":results.data[first-1][15], "rowspan":1, "colspan":1});
-      headers.push({"label":results.data[first-1][16], "rowspan":1, "colspan":1});
+      headers.push({"label":"Player", "rowspan":1, "colspan":1}); // player
+      headers.push({"label":results.data[first-1][0], "rowspan":1, "colspan":1}); // # rounds
+      headers.push({"label":results.data[first-1][24] + " 100", "rowspan":1, "colspan":1}); // weapons charged 100%
+      headers.push({"label":results.data[first-1][24] + " 50", "rowspan":1, "colspan":1}); // weapons charged 50%
+      // attack
+      headers.push({"label":"Attaques", "rowspan":1, "colspan":1}); // # attacks
+      headers.push({"label":"Coups critiques", "rowspan":1, "colspan":1}); // # critical hits
+      headers.push({"label":results.data[first-1][16], "rowspan":1, "colspan":1}); // total damages
+      headers.push({"label":results.data[first-1][14], "rowspan":1, "colspan":1}); // attenuated damages
+      headers.push({"label":results.data[first-1][15], "rowspan":1, "colspan":1}); // suppressed isolytic damages
+      headers.push({"label":results.data[first-1][13], "rowspan":1, "colspan":1}); // shield damages
+      headers.push({"label":results.data[first-1][12], "rowspan":1, "colspan":1}); // hull damages
+      //defense
       headers.push({"label":"Attaques reçues", "rowspan":1, "colspan":1});
       headers.push({"label":"Coups critiques", "rowspan":1, "colspan":1});
-      headers.push({"label":results.data[first-1][12], "rowspan":1, "colspan":1});
-      headers.push({"label":results.data[first-1][13], "rowspan":1, "colspan":1});
+      headers.push({"label":results.data[first-1][16], "rowspan":1, "colspan":1});
       headers.push({"label":results.data[first-1][14], "rowspan":1, "colspan":1});
       headers.push({"label":results.data[first-1][15], "rowspan":1, "colspan":1});
-      headers.push({"label":results.data[first-1][16], "rowspan":1, "colspan":1});
+      headers.push({"label":results.data[first-1][13], "rowspan":1, "colspan":1});
+      headers.push({"label":results.data[first-1][12], "rowspan":1, "colspan":1});
 
       detailed_data_headers.push(headers);
 
@@ -193,22 +210,23 @@ function playerData(details, p, vsx) {
   a[i++] = countVal(details, p, 3, 24, "50"); // # weapon recharge 50%
   a[i++] = countVals(details, p, 3, 2, ["Attaque"]); // # attacks
   a[i++] = countVals(details, p, 3, 11, ["YES", "OUI"]); // # critical attacks
-  a[i++] = sumVal(details, p, 3, 12); // # hull damage given
-  a[i++] = sumVal(details, p, 3, 13); // # shield damage given
-  a[i++] = sumVal(details, p, 3, 14); // # iso damages given
-  a[i++] = sumVal(details, p, 3, 15); // # attenuated damages given
   a[i++] = sumVal(details, p, 3, 16); // # total damages given
+  a[i++] = sumVal(details, p, 3, 14); // # attenuated damages
+  a[i++] = sumVal(details, p, 3, 15); // # iso damages
+  a[i++] = sumVal(details, p, 3, 13); // # shield damage
+  a[i++] = sumVal(details, p, 3, 12); // # hull damage
   a[i++] = countVals(details, p, 7, 2, ["Attaque"]); // # attacks received
   a[i++] = countVals(details, p, 7, 11, ["YES", "OUI"]); // # critical attacks received
-  a[i++] = sumVal(details, p, 7, 12); // # hull damage received
-  a[i++] = sumVal(details, p, 7, 13); // # shield damage received
-  a[i++] = sumVal(details, p, 7, 14); // # iso damages received
-  a[i++] = sumVal(details, p, 7, 15); // # attenuated damages received
   a[i++] = sumVal(details, p, 7, 16); // # total damages received
-
+  a[i++] = sumVal(details, p, 7, 14); // # attenuated damages
+  a[i++] = sumVal(details, p, 7, 15); // # iso damages suppressed
+  a[i++] = sumVal(details, p, 7, 13); // # shield damage
+  a[i++] = sumVal(details, p, 7, 12); // # hull damage
+  
   return a;
 }
 
+// sum a column if matched
 function sumVal(data, key, key_col_idx, data_col_idx) {
   var sum = 0;
   data.filter(row => row[key_col_idx] == key)
@@ -217,6 +235,7 @@ function sumVal(data, key, key_col_idx, data_col_idx) {
   return scaled(sum);
 }
 
+// numbers formatting
 function scaled(n) {
   return Intl.NumberFormat("en-US", {notation: "compact"}).format(n);
 }
@@ -241,6 +260,8 @@ function maxVal(data, key, key_col_idx, data_col_idx) {
   return max;
 }
 
+// read file into memory and start the main processing
+// (parsing and display)
 function readCSV(file) {
   var read = false;
   var data = null;
@@ -261,6 +282,7 @@ function readCSV(file) {
   }
 }
 
+// load file content in memory
 function loadCSV() {
   const curFiles = input.files;
   if (curFiles.length === 0) {
