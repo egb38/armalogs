@@ -15,13 +15,32 @@ window.onload = function() {
   input.addEventListener("change", armadaLogAnalysis);    
 }
 
+function onException (ex) { 
+  var err = document.createElement('pre');
+  var errMsg = document.createElement('div');
+  var errorBox = document.querySelector(".errorBox");
+
+  err.textContent = ex.stack;
+  errMsg.textContent = "Something went wrong!";
+
+  errorBox.appendChild(errMsg);
+  errorBox.appendChild(err);
+  err.style.display = 'block';
+  errMsg.style.display = 'block';
+  errorBox.style.display = 'block';
+}
+
 // main entry point, on file selected
 function armadaLogAnalysis() {
-  // load file in memory
-  var csvFile = loadCSV();
-  if (csvFile!==null) {
-    // main process
-    var data = readCSV(csvFile);
+  try {
+    // load file in memory
+    var csvFile = loadCSV();
+    if (csvFile!==null) {
+      // main process
+      var data = readCSV(csvFile);
+    }
+  } catch(e) {
+   onException(e); 
   }
 }
 
@@ -122,9 +141,22 @@ function createTable(tableData) {
 
 // parse CSV log file
 function parseCSV(csv) {
+  var delim = ',';
+  if (csv.search('\t')!=-1) {
+    delim = '\t';
+  }
 
-  Papa.parse(csv, {
-    complete: function(results) {
+  Papa.parse(csv, 
+    {
+      complete: function(results) {
+        doParse(results); 
+      },
+      delimiter: delim
+    }
+  );
+}
+
+function doParse(results) {
       // oponent
       var opponent = results.data[1][0];
       analysis.against = { "opponent": opponent, "level": results.data[1][1]}; 
@@ -197,8 +229,6 @@ function parseCSV(csv) {
         detailed_data.push(playerData(details, p, "\u000a" + players_ship[idx]));
       })
       armada_analysis = { "intro": analysis, "details": {"headers":detailed_data_headers, "data":detailed_data, "armada": playerData(details, opponent, "")}};
-    }
-  });
 }
 
 function playerData(details, p, vsx) {
