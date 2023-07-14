@@ -8,9 +8,10 @@ Try it here: https://egb38.github.io/armalogs/
 
 
 ## Changes
-### 20203/mm/dd
+### 20203/07/14
 * support for tsv logs
 * display js errors
+* added link to github repo
 
 ### 2023/07/13
 initial version
