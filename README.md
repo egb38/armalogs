@@ -5,3 +5,11 @@ Star Treck Fleet Command armada battle log visualizer.
 
 
 Try it here: https://egb38.github.io/armalogs/
+
+
+## Changes
+### 20203/mm/dd
+* ...
+
+### 2023/07/13
+initial version
