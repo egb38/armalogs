@@ -1,4 +1,4 @@
-/* styles generated using https://divtable.com/table-styler/ */
+/* styles originally generated using https://divtable.com/table-styler/ */
 
 .page-title {
   border: 5px solid rgba(101,61,164,0.69);
@@ -19,8 +19,12 @@
   padding: 5px;
 }
 
-.logs {
-
+.armada-title {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: left;
+  margin: 5px;
+  padding-left: 10px;
 }
 
 .armada-battle {
@@ -76,9 +80,7 @@ table tfoot td {
 
 table.redTable {
   border: 2px solid #A40808;
-  background-color: #EEE7DB;
-  width: 400px;
-  text-align: left;
+  background-color: #EEE7DB;  text-align: left;
   border-collapse: collapse;
 }
 table.redTable td, table.redTable th {
@@ -114,7 +116,6 @@ table.redTable tfoot .links a{
 table.blueTable {
   border: 1px solid #1C6EA4;
   background-color: #EEEEEE;
-  width: 400px;
   text-align: left;
   border-collapse: collapse;
 }
