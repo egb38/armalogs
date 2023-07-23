@@ -17,7 +17,6 @@
     "attacks-received": "Attaques reçues",
     "critical-hits": "Coups critiques",
 
-    /* valeurs presentes dans le journal de bataille */
     "defeat": "DÉFAITE",
     "attack": "Attaque",
     "yes": "OUI"

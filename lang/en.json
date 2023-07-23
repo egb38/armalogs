@@ -17,7 +17,6 @@
     "attacks-received": "Received attacks",
     "critical-hits": "Critical hits",
 
-    /* values read from the log file */
     "defeat": "DEFEAT",
     "attack": "Attack",
     "yes": "YES"
