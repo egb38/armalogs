@@ -1,0 +1,22 @@
+{
+    "app-title": "Star Trek Fleet Command, visualisateur de journal de bataille d'armada",
+    "file-selector": "Journal d'aramada:",
+    "solo-armada": "Armada solo",
+    "group-armada": "Armada de groupe",
+    "defeat": "DÉFAITE",
+    "outcome-d": "Défaite",
+    "outcome-v": "Victoire",
+    "battle": "Bataille",
+    "result": "Résultat",
+    "level": "niveau",
+    "in": "en",
+    "rounds": "manche(s)",
+    "Rounds": "Manches",
+    "attack": "Attaque",
+    "defense": "Défense",
+    "yes": "OUI",
+    "player": "Joueur",
+    "attacks": "Attaques",
+    "attacks-received": "Attaques reçues",
+    "critical-hits": "Coups critiques"
+}

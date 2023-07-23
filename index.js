@@ -51,7 +51,7 @@ function displayData(summary, data) {
   divLog.setAttribute('class', 'armada-battle');
   // title
   var divtitle = document.createElement('div');
-  divtitle.textContent = solo_armada?"Armada Solo":"Armada de groupe";
+  divtitle.textContent = solo_armada?getI18nContent('solo-armada'):getI18nContent('group-armada');
   divtitle.setAttribute('class', 'armada-title'); 
   divLog.appendChild(divtitle);
   // summary
@@ -66,28 +66,26 @@ function displayData(summary, data) {
 // TODO proper/more extensive I18N
 function createSummary(summary) {
   var summaryTable = document.createElement('table');
-  if (summary.result.outcome == "DÉFAITE" || summary.result.outcome == "DEFEAT") {
+  if (summary.result.outcome == 'outcome-v') {
     summaryTable.setAttribute('class', 'blueTable'); 
-    summary.result.outcome = "Victoire"
   } else {
     summaryTable.setAttribute('class', 'redTable'); 
-    summary.result.outcome = "Défaite"
   }
   var tableBody = document.createElement('tbody');
   var row = document.createElement('tr');
   var cell = document.createElement('th');
-  cell.textContent = "Bataille: ";
+  cell.textContent = getI18nContent("battle");
   row.appendChild(cell);
   cell = document.createElement('th');
-  cell.textContent = summary.who + " vs " + summary.against.opponent + ", niveau: " + summary.against.level;
+  cell.textContent = summary.who + " vs " + summary.against.opponent + ", " + getI18nContent('level') + " " + summary.against.level;
   row.appendChild(cell);
   summaryTable.appendChild(row);
   row = document.createElement('tr')
   cell = document.createElement('th');
-  cell.textContent = "Résultat: ";
+  cell.textContent = getI18nContent("result");
   row.appendChild(cell);
   cell = document.createElement('th');
-  cell.textContent = summary.result.outcome + " en " + summary.result.rounds + " manche(s)";
+  cell.textContent = getI18nContent(summary.result.outcome) + " " + getI18nContent('in') + " " + summary.result.rounds + " " + getI18nContent('rounds');
   row.appendChild(cell);
   summaryTable.appendChild(row);
   return summaryTable;
@@ -203,27 +201,27 @@ function doParse(results) {
       // headers
       var headers = [];
       headers.push({"label":"", "rowspan":1, "colspan":4});
-      headers.push({"label":"Attaque", "rowspan":1, "colspan":7});
-      headers.push({"label":"Defense", "rowspan":1, "colspan":7});
+      headers.push({"label":getI18nContent('attack'), "rowspan":1, "colspan":7});
+      headers.push({"label":getI18nContent('defense'), "rowspan":1, "colspan":7});
       detailed_data_headers.push(headers);
 
 
       headers = [];
-      headers.push({"label":"Player", "rowspan":1, "colspan":1}); // player
-      headers.push({"label":results.data[first-1][0], "rowspan":1, "colspan":1}); // # rounds
+      headers.push({"label":getI18nContent('player'), "rowspan":1, "colspan":1}); // player
+      headers.push({"label":getI18nContent('Rounds'), "rowspan":1, "colspan":1}); // # rounds
       headers.push({"label":results.data[first-1][24] + " 100", "rowspan":1, "colspan":1}); // weapons charged 100%
       headers.push({"label":results.data[first-1][24] + " 50", "rowspan":1, "colspan":1}); // weapons charged 50%
       // attack
-      headers.push({"label":"Attaques", "rowspan":1, "colspan":1}); // # attacks
-      headers.push({"label":"Coups critiques", "rowspan":1, "colspan":1}); // # critical hits
+      headers.push({"label":getI18nContent('attacks'), "rowspan":1, "colspan":1}); // # attacks
+      headers.push({"label":getI18nContent('critical-hits'), "rowspan":1, "colspan":1}); // # critical hits
       headers.push({"label":results.data[first-1][16], "rowspan":1, "colspan":1}); // total damages
       headers.push({"label":results.data[first-1][14], "rowspan":1, "colspan":1}); // attenuated damages
       headers.push({"label":results.data[first-1][15], "rowspan":1, "colspan":1}); // suppressed isolytic damages
       headers.push({"label":results.data[first-1][13], "rowspan":1, "colspan":1}); // shield damages
       headers.push({"label":results.data[first-1][12], "rowspan":1, "colspan":1}); // hull damages
       //defense
-      headers.push({"label":"Attaques reçues", "rowspan":1, "colspan":1});
-      headers.push({"label":"Coups critiques", "rowspan":1, "colspan":1});
+      headers.push({"label":getI18nContent('attacks-received'), "rowspan":1, "colspan":1});
+      headers.push({"label":getI18nContent('critical-hits'), "rowspan":1, "colspan":1});
       headers.push({"label":results.data[first-1][16], "rowspan":1, "colspan":1});
       headers.push({"label":results.data[first-1][14], "rowspan":1, "colspan":1});
       headers.push({"label":results.data[first-1][15], "rowspan":1, "colspan":1});
@@ -249,7 +247,10 @@ function doParse(results) {
       }      
       // battle summary
       analysis.result = {};
-      analysis.result.outcome = results.data[1][2];
+      // checking the result of the opponent
+      // defeat == victory for the player
+      var isVictory = getStringAllLocales('defeat').includes(results.data[1][2]); 
+      analysis.result.outcome = isVictory?'outcome-v':'outcome-d';
       var done = false;
       for (var i = results.data.length-1; !done; i--) {
         if (results.data[i][0] !== '') {
@@ -270,15 +271,15 @@ function playerData(details, p, vsx, isSolo) {
   a[i++] = maxVal(details, p, checkAttackOn, 0); // max round
   a[i++] = countVal(details, p, checkAttackOn, 24, "100"); // # weapon recharge 100%
   a[i++] = countVal(details, p, checkAttackOn, 24, "50"); // # weapon recharge 50%
-  a[i++] = countVals(details, p, checkAttackOn, 2, ["Attaque"]); // # attacks
-  a[i++] = countVals(details, p, checkAttackOn, 11, ["YES", "OUI"]); // # critical attacks
+  a[i++] = countVals(details, p, checkAttackOn, 2, getStringAllLocales('attack')); // # attacks
+  a[i++] = countVals(details, p, checkAttackOn, 11, getStringAllLocales('yes')); // # critical attacks
   a[i++] = sumVal(details, p, checkAttackOn, 16); // # total damages given
   a[i++] = sumVal(details, p, checkAttackOn, 14); // # attenuated damages
   a[i++] = sumVal(details, p, checkAttackOn, 15); // # iso damages
   a[i++] = sumVal(details, p, checkAttackOn, 13); // # shield damage
   a[i++] = sumVal(details, p, checkAttackOn, 12); // # hull damage
-  a[i++] = countVals(details, p, checkDefenseOn, 2, ["Attaque"]); // # attacks received
-  a[i++] = countVals(details, p, checkDefenseOn, 11, ["YES", "OUI"]); // # critical attacks received
+  a[i++] = countVals(details, p, checkDefenseOn, 2, getStringAllLocales('attack')); // # attacks received
+  a[i++] = countVals(details, p, checkDefenseOn, 11, getStringAllLocales('yes')); // # critical attacks received
   a[i++] = sumVal(details, p, checkDefenseOn, 16); // # total damages received
   a[i++] = sumVal(details, p, checkDefenseOn, 14); // # attenuated damages
   a[i++] = sumVal(details, p, checkDefenseOn, 15); // # iso damages suppressed
