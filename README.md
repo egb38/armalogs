@@ -8,6 +8,10 @@ Try it here: https://egb38.github.io/armalogs/
 
 
 ## Changes
+### 20203/07/22
+* added solo armadas support
+* minor changes to battle summary
+
 ### 20203/07/14
 * support for tsv logs
 * display js errors
