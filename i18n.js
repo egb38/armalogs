@@ -1,6 +1,7 @@
 // originally copied from https://phrase.com/blog/posts/step-step-guide-javascript-localization/
-const defaultLocale = "fr";
-var currentLocale = defaultLocale;
+
+// defaults to French
+var currentLocale = "fr";
 const supportedLocales = ["en", "fr"];
 
 var allTranslations = [];
@@ -14,11 +15,19 @@ let translations = {};
 // When the page content is ready...
 document.addEventListener("DOMContentLoaded", () => {
 
-  // Translate the page to the default locale
-  setLocale(defaultLocale);
+  // is there a saved locale in local storage?
+  var savedLocale = localStorage.getItem("locale");
+  if (savedLocale!=undefined && savedLocale!=null 
+      && supportedLocales.includes(savedLocale) && savedLocale!=currentLocale) {
+    // change current locale to teh saved value
+    currentLocale = savedLocale;
+  }
+    // Translate the page to the current locale
+    setLocale(currentLocale);
+
 
   // locale change handling
-  bindLocaleSwitcher(defaultLocale);
+  bindLocaleSwitcher(currentLocale);
 
   // load all translations
   loadAllTranslations();
@@ -33,6 +42,7 @@ async function setLocale(newLocale) {
     await fetchTranslationsFor(newLocale);
   locale = newLocale;
   translations = newTranslations;
+  localStorage.setItem("locale", locale);
   translatePage();
 }
 

@@ -3,7 +3,6 @@
     "file-selector": "Journal d'aramada:",
     "solo-armada": "Armada solo",
     "group-armada": "Armada de groupe",
-    "defeat": "DÉFAITE",
     "outcome-d": "Défaite",
     "outcome-v": "Victoire",
     "battle": "Bataille",
@@ -12,11 +11,15 @@
     "in": "en",
     "rounds": "manche(s)",
     "Rounds": "Manches",
-    "attack": "Attaque",
     "defense": "Défense",
-    "yes": "OUI",
     "player": "Joueur",
     "attacks": "Attaques",
     "attacks-received": "Attaques reçues",
-    "critical-hits": "Coups critiques"
+    "critical-hits": "Coups critiques",
+
+    /* valeurs presentes dans le journal de bataille */
+    "defeat": "DÉFAITE",
+    "attack": "Attaque",
+    "yes": "OUI"
+
 }
