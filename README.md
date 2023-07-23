@@ -8,6 +8,13 @@ Try it here: https://egb38.github.io/armalogs/
 
 
 ## Changes
+### 20203/07/23
+* i18n support
+  * en, fr only (happy to accept contributions). 
+  * Limitations: 
+    * does not translate dyncamically generated content on locale change.
+    * some headers in the visualization are coming from the log file, some others are coming fromthe selected locale
+
 ### 20203/07/22
 * added solo armadas support
 * minor changes to battle summary
