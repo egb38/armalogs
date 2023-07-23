@@ -4,6 +4,7 @@ var divLogs;
 var csvContent = null;
 var list = null;
 var armada_analysis = null;
+var solo_armada = false;
 
 var analysis = {};
 
@@ -48,6 +49,11 @@ function armadaLogAnalysis() {
 function displayData(summary, data) {
   var divLog = document.createElement('div');
   divLog.setAttribute('class', 'armada-battle');
+  // title
+  var divtitle = document.createElement('div');
+  divtitle.textContent = solo_armada?"Armada Solo":"Armada de groupe";
+  divtitle.setAttribute('class', 'armada-title'); 
+  divLog.appendChild(divtitle);
   // summary
   divLog.appendChild(createSummary(summary));
   // main content
@@ -70,10 +76,10 @@ function createSummary(summary) {
   var tableBody = document.createElement('tbody');
   var row = document.createElement('tr');
   var cell = document.createElement('th');
-  cell.textContent = "Bataille contre: ";
+  cell.textContent = "Bataille: ";
   row.appendChild(cell);
   cell = document.createElement('th');
-  cell.textContent = summary.against.opponent + ", niveau: " + summary.against.level;
+  cell.textContent = summary.who + " vs " + summary.against.opponent + ", niveau: " + summary.against.level;
   row.appendChild(cell);
   summaryTable.appendChild(row);
   row = document.createElement('tr')
@@ -81,7 +87,7 @@ function createSummary(summary) {
   cell.textContent = "Résultat: ";
   row.appendChild(cell);
   cell = document.createElement('th');
-  cell.textContent = summary.result.outcome;
+  cell.textContent = summary.result.outcome + " en " + summary.result.rounds + " manche(s)";
   row.appendChild(cell);
   summaryTable.appendChild(row);
   return summaryTable;
@@ -161,34 +167,37 @@ function doParse(results) {
       var opponent = results.data[1][0];
       analysis.against = { "opponent": opponent, "level": results.data[1][1]}; 
       
-      // battle summary
-      analysis.result = {};
-      analysis.result.outcome = results.data[1][2];
-      var done = false;
-      for (var i = results.data.length-1; !done; i--) {
-        if (results.data[i][0] !== '') {
-          analysis.result.rounds = results.data[i][0];
-          done = true;
-        }
-      }
-
       // first row with rounds details
       var first = 0;
       for (var i=0; results.data[i][0]!=1; i++){ first = i+1;}
       var details = results.data.slice(first);
 
-      // players list
-      var players = [];
-      var players_ship = [];
+      // players/ships list
+      var players = []; // to be used for group armada
+      var ships = []; // to be used for solo armada
+      var players_ship = []; // display name
+      var alliance = null;
       for (var i=0; details[i][0]==1; i++) {
         if (!players.includes(details[i][3]) && details[i][3] != opponent) {
-          if (details[i][3] != details[1][0]){
-            players.push(details[i][3]);
-            players_ship.push(details[i][5]);
-          }
+          players.push(details[i][3]);
+          if (alliance==null) alliance = details[i][4];
+        }
+        var p_s = details[i][3] + "\u000a" + details[i][5];
+        if (!players_ship.includes(p_s) && details[i][3] != opponent) {
+          players_ship.push(p_s);
         }
       }
-      analysis.players = players;
+      if (players.length==1 && players.length!=players_ship.length) {
+        solo_armada = true;
+        for (var i=0; details[i][0]==1; i++) {
+          if (!ships.includes(details[i][5]) && details[i][3] != opponent) {
+            ships.push(details[i][5]);
+          }
+        }
+      } else {
+        solo_armada = false;
+      }
+      analysis.players = {"player": players, "players_ship": players_ship };
 
       var detailed_data_headers = [];
       // headers
@@ -225,33 +234,56 @@ function doParse(results) {
 
       // player by player analysis
       var detailed_data = [];
-      players.forEach((p, idx) => {
-        detailed_data.push(playerData(details, p, "\u000a" + players_ship[idx]));
+      players_ship.forEach((p, idx) => {
+        if (solo_armada) {
+          detailed_data.push(playerData(details, ships[idx], "", true));
+        } else {
+          detailed_data.push(playerData(details, players[idx], players_ship[idx], false));
+        }
       })
-      armada_analysis = { "intro": analysis, "details": {"headers":detailed_data_headers, "data":detailed_data, "armada": playerData(details, opponent, "")}};
+
+      if (solo_armada) {
+        analysis.who = players[0];
+      } else {
+        analysis.who = alliance;
+      }      
+      // battle summary
+      analysis.result = {};
+      analysis.result.outcome = results.data[1][2];
+      var done = false;
+      for (var i = results.data.length-1; !done; i--) {
+        if (results.data[i][0] !== '') {
+          analysis.result.rounds = results.data[i][0];
+          done = true;
+        }
+      }
+
+      armada_analysis = { "intro": analysis, "details": {"headers":detailed_data_headers, "data":detailed_data, "armada": playerData(details, opponent, opponent, solo_armada)}};      
 }
 
-function playerData(details, p, vsx) {
+function playerData(details, p, vsx, isSolo) {
   var a = [];
   var i = 0;
-  a[i++] = p + vsx;
-  a[i++] = maxVal(details, p, 3, 0); // max round
-  a[i++] = countVal(details, p, 3, 24, "100"); // # weapon recharge 100%
-  a[i++] = countVal(details, p, 3, 24, "50"); // # weapon recharge 50%
-  a[i++] = countVals(details, p, 3, 2, ["Attaque"]); // # attacks
-  a[i++] = countVals(details, p, 3, 11, ["YES", "OUI"]); // # critical attacks
-  a[i++] = sumVal(details, p, 3, 16); // # total damages given
-  a[i++] = sumVal(details, p, 3, 14); // # attenuated damages
-  a[i++] = sumVal(details, p, 3, 15); // # iso damages
-  a[i++] = sumVal(details, p, 3, 13); // # shield damage
-  a[i++] = sumVal(details, p, 3, 12); // # hull damage
-  a[i++] = countVals(details, p, 7, 2, ["Attaque"]); // # attacks received
-  a[i++] = countVals(details, p, 7, 11, ["YES", "OUI"]); // # critical attacks received
-  a[i++] = sumVal(details, p, 7, 16); // # total damages received
-  a[i++] = sumVal(details, p, 7, 14); // # attenuated damages
-  a[i++] = sumVal(details, p, 7, 15); // # iso damages suppressed
-  a[i++] = sumVal(details, p, 7, 13); // # shield damage
-  a[i++] = sumVal(details, p, 7, 12); // # hull damage
+  var checkAttackOn = isSolo?5:3; // if solo armada, use the ship name to aggregate data instead of player name
+  var checkDefenseOn = isSolo?9:7; // if solo armada, use the ship name to aggregate data instead of player name
+  a[i++] = isSolo?p:vsx;
+  a[i++] = maxVal(details, p, checkAttackOn, 0); // max round
+  a[i++] = countVal(details, p, checkAttackOn, 24, "100"); // # weapon recharge 100%
+  a[i++] = countVal(details, p, checkAttackOn, 24, "50"); // # weapon recharge 50%
+  a[i++] = countVals(details, p, checkAttackOn, 2, ["Attaque"]); // # attacks
+  a[i++] = countVals(details, p, checkAttackOn, 11, ["YES", "OUI"]); // # critical attacks
+  a[i++] = sumVal(details, p, checkAttackOn, 16); // # total damages given
+  a[i++] = sumVal(details, p, checkAttackOn, 14); // # attenuated damages
+  a[i++] = sumVal(details, p, checkAttackOn, 15); // # iso damages
+  a[i++] = sumVal(details, p, checkAttackOn, 13); // # shield damage
+  a[i++] = sumVal(details, p, checkAttackOn, 12); // # hull damage
+  a[i++] = countVals(details, p, checkDefenseOn, 2, ["Attaque"]); // # attacks received
+  a[i++] = countVals(details, p, checkDefenseOn, 11, ["YES", "OUI"]); // # critical attacks received
+  a[i++] = sumVal(details, p, checkDefenseOn, 16); // # total damages received
+  a[i++] = sumVal(details, p, checkDefenseOn, 14); // # attenuated damages
+  a[i++] = sumVal(details, p, checkDefenseOn, 15); // # iso damages suppressed
+  a[i++] = sumVal(details, p, checkDefenseOn, 13); // # shield damage
+  a[i++] = sumVal(details, p, checkDefenseOn, 12); // # hull damage
   
   return a;
 }
