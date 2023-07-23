@@ -3,7 +3,6 @@
     "file-selector": "Battle log:",
     "solo-armada": "Solo armada",
     "group-armada": "Group armada",
-    "defeat": "DEFEAT",
     "outcome-d": "Defeat",
     "outcome-v": "Victory",
     "battle": "Battle",
@@ -12,11 +11,15 @@
     "in": "in",
     "rounds": "round(s)",
     "Rounds": "Rounds",
-    "attack": "Attack",
     "defense": "Defense",
-    "yes": "YES",
     "player": "Player",
     "attacks": "Attacks",
     "attacks-received": "Received attacks",
-    "critical-hits": "Critical hits"
+    "critical-hits": "Critical hits",
+
+    /* values read from the log file */
+    "defeat": "DEFEAT",
+    "attack": "Attack",
+    "yes": "YES"
+
 }
