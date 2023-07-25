@@ -180,9 +180,17 @@ function parseCSV(csv) {
 }
 
 function doParse(results) {
+  var armada_row = 1;
+  if (results.data[2][0]!="") {
+    // against ship or single attacker for group armada
+    // in that case row idx=1 is about the player 
+    // and row idx=2 is about the ship / armada
+    armada_row = 2;
+  }
+
       // oponent
-      var opponent = results.data[1][0];
-      analysis.against = { "opponent": opponent, "level": results.data[1][1]}; 
+      var opponent = results.data[armada_row][0];
+      analysis.against = { "opponent": opponent, "level": results.data[armada_row][1]}; 
       
       // first row with rounds details
       var first = 0;
@@ -194,6 +202,7 @@ function doParse(results) {
       var ships = []; // to be used for solo armada
       var players_ship = []; // display name
       var alliance = null;
+
       for (var i=0; details[i][0]==1; i++) {
         if (!players.includes(details[i][3]) && details[i][3] != opponent) {
           players.push(details[i][3]);
@@ -268,7 +277,7 @@ function doParse(results) {
       analysis.result = {};
       // checking the result of the opponent
       // defeat == victory for the player
-      var isVictory = getStringAllLocales('defeat').includes(results.data[1][2]); 
+      var isVictory = getStringAllLocales('defeat').includes(results.data[armada_row][2]); 
       analysis.result.outcome = isVictory?'outcome-v':'outcome-d';
       var done = false;
       for (var i = results.data.length-1; !done; i--) {
