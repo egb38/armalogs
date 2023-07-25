@@ -180,105 +180,114 @@ function parseCSV(csv) {
 }
 
 function doParse(results) {
-      // oponent
-      var opponent = results.data[1][0];
-      analysis.against = { "opponent": opponent, "level": results.data[1][1]}; 
-      
-      // first row with rounds details
-      var first = 0;
-      for (var i=0; results.data[i][0]!=1; i++){ first = i+1;}
-      var details = results.data.slice(first);
+  var armada_row = 1;
+  if (results.data[2][0]!="") {
+    // against ship or single attacker for group armada
+    // in that case row idx=1 is about the player 
+    // and row idx=2 is about the ship / armada
+    armada_row = 2;
+  }
 
-      // players/ships list
-      var players = []; // to be used for group armada
-      var ships = []; // to be used for solo armada
-      var players_ship = []; // display name
-      var alliance = null;
-      for (var i=0; details[i][0]==1; i++) {
-        if (!players.includes(details[i][3]) && details[i][3] != opponent) {
-          players.push(details[i][3]);
-          if (alliance==null) alliance = details[i][4];
-        }
-        var p_s = details[i][3] + "\u000a" + details[i][5];
-        if (!players_ship.includes(p_s) && details[i][3] != opponent) {
-          players_ship.push(p_s);
-        }
+  // oponent
+  var opponent = results.data[armada_row][0];
+  analysis.against = { "opponent": opponent, "level": results.data[armada_row][1]}; 
+  
+  // first row with rounds details
+  var first = 0;
+  for (var i=0; results.data[i][0]!=1; i++){ first = i+1;}
+  var details = results.data.slice(first);
+
+  // players/ships list
+  var players = []; // to be used for group armada
+  var ships = []; // to be used for solo armada
+  var players_ship = []; // display name
+  var alliance = null;
+
+  for (var i=0; details[i][0]==1; i++) {
+    if (!players.includes(details[i][3]) && details[i][3] != opponent) {
+      players.push(details[i][3]);
+      if (alliance==null) alliance = details[i][4];
+    }
+    var p_s = details[i][3] + "\u000a" + details[i][5];
+    if (!players_ship.includes(p_s) && details[i][3] != opponent) {
+      players_ship.push(p_s);
+    }
+  }
+  if (players.length==1 && players.length!=players_ship.length) {
+    solo_armada = true;
+    for (var i=0; details[i][0]==1; i++) {
+      if (!ships.includes(details[i][5]) && details[i][3] != opponent) {
+        ships.push(details[i][5]);
       }
-      if (players.length==1 && players.length!=players_ship.length) {
-        solo_armada = true;
-        for (var i=0; details[i][0]==1; i++) {
-          if (!ships.includes(details[i][5]) && details[i][3] != opponent) {
-            ships.push(details[i][5]);
-          }
-        }
-      } else {
-        solo_armada = false;
-      }
-      analysis.players = {"player": players, "players_ship": players_ship };
+    }
+  } else {
+    solo_armada = false;
+  }
+  analysis.players = {"player": players, "players_ship": players_ship };
 
-      var detailed_data_headers = [];
-      // headers
-      var headers = [];
-      headers.push({"label":"", "rowspan":1, "colspan":4});
-      headers.push({"label":getI18nContent('attack'), "rowspan":1, "colspan":7});
-      headers.push({"label":getI18nContent('defense'), "rowspan":1, "colspan":7});
-      detailed_data_headers.push(headers);
+  var detailed_data_headers = [];
+  // headers
+  var headers = [];
+  headers.push({"label":"", "rowspan":1, "colspan":4});
+  headers.push({"label":getI18nContent('attack'), "rowspan":1, "colspan":7});
+  headers.push({"label":getI18nContent('defense'), "rowspan":1, "colspan":7});
+  detailed_data_headers.push(headers);
 
 
-      headers = [];
-      headers.push({"label":getI18nContent('player'), "rowspan":1, "colspan":1}); // player
-      headers.push({"label":getI18nContent('Rounds'), "rowspan":1, "colspan":1}); // # rounds
-      headers.push({"label":results.data[first-1][24] + " 100", "rowspan":1, "colspan":1}); // weapons charged 100%
-      headers.push({"label":results.data[first-1][24] + " 50", "rowspan":1, "colspan":1}); // weapons charged 50%
-      // attack
-      headers.push({"label":getI18nContent('attacks'), "rowspan":1, "colspan":1}); // # attacks
-      headers.push({"label":getI18nContent('critical-hits'), "rowspan":1, "colspan":1}); // # critical hits
-      headers.push({"label":results.data[first-1][16], "rowspan":1, "colspan":1}); // total damages
-      headers.push({"label":results.data[first-1][14], "rowspan":1, "colspan":1}); // attenuated damages
-      headers.push({"label":results.data[first-1][15], "rowspan":1, "colspan":1}); // suppressed isolytic damages
-      headers.push({"label":results.data[first-1][13], "rowspan":1, "colspan":1}); // shield damages
-      headers.push({"label":results.data[first-1][12], "rowspan":1, "colspan":1}); // hull damages
-      //defense
-      headers.push({"label":getI18nContent('attacks-received'), "rowspan":1, "colspan":1});
-      headers.push({"label":getI18nContent('critical-hits'), "rowspan":1, "colspan":1});
-      headers.push({"label":results.data[first-1][16], "rowspan":1, "colspan":1});
-      headers.push({"label":results.data[first-1][14], "rowspan":1, "colspan":1});
-      headers.push({"label":results.data[first-1][15], "rowspan":1, "colspan":1});
-      headers.push({"label":results.data[first-1][13], "rowspan":1, "colspan":1});
-      headers.push({"label":results.data[first-1][12], "rowspan":1, "colspan":1});
+  headers = [];
+  headers.push({"label":getI18nContent('player'), "rowspan":1, "colspan":1}); // player
+  headers.push({"label":getI18nContent('Rounds'), "rowspan":1, "colspan":1}); // # rounds
+  headers.push({"label":results.data[first-1][24] + " 100", "rowspan":1, "colspan":1}); // weapons charged 100%
+  headers.push({"label":results.data[first-1][24] + " 50", "rowspan":1, "colspan":1}); // weapons charged 50%
+  // attack
+  headers.push({"label":getI18nContent('attacks'), "rowspan":1, "colspan":1}); // # attacks
+  headers.push({"label":getI18nContent('critical-hits'), "rowspan":1, "colspan":1}); // # critical hits
+  headers.push({"label":results.data[first-1][16], "rowspan":1, "colspan":1}); // total damages
+  headers.push({"label":results.data[first-1][14], "rowspan":1, "colspan":1}); // attenuated damages
+  headers.push({"label":results.data[first-1][15], "rowspan":1, "colspan":1}); // suppressed isolytic damages
+  headers.push({"label":results.data[first-1][13], "rowspan":1, "colspan":1}); // shield damages
+  headers.push({"label":results.data[first-1][12], "rowspan":1, "colspan":1}); // hull damages
+  //defense
+  headers.push({"label":getI18nContent('attacks-received'), "rowspan":1, "colspan":1});
+  headers.push({"label":getI18nContent('critical-hits'), "rowspan":1, "colspan":1});
+  headers.push({"label":results.data[first-1][16], "rowspan":1, "colspan":1});
+  headers.push({"label":results.data[first-1][14], "rowspan":1, "colspan":1});
+  headers.push({"label":results.data[first-1][15], "rowspan":1, "colspan":1});
+  headers.push({"label":results.data[first-1][13], "rowspan":1, "colspan":1});
+  headers.push({"label":results.data[first-1][12], "rowspan":1, "colspan":1});
 
-      detailed_data_headers.push(headers);
+  detailed_data_headers.push(headers);
 
-      // player by player analysis
-      var detailed_data = [];
-      players_ship.forEach((p, idx) => {
-        if (solo_armada) {
-          detailed_data.push(playerData(details, ships[idx], "", true));
-        } else {
-          detailed_data.push(playerData(details, players[idx], players_ship[idx], false));
-        }
-      })
+  // player by player analysis
+  var detailed_data = [];
+  players_ship.forEach((p, idx) => {
+    if (solo_armada) {
+      detailed_data.push(playerData(details, ships[idx], "", true));
+    } else {
+      detailed_data.push(playerData(details, players[idx], players_ship[idx], false));
+    }
+  })
 
-      if (solo_armada) {
-        analysis.who = players[0];
-      } else {
-        analysis.who = alliance;
-      }      
-      // battle summary
-      analysis.result = {};
-      // checking the result of the opponent
-      // defeat == victory for the player
-      var isVictory = getStringAllLocales('defeat').includes(results.data[1][2]); 
-      analysis.result.outcome = isVictory?'outcome-v':'outcome-d';
-      var done = false;
-      for (var i = results.data.length-1; !done; i--) {
-        if (results.data[i][0] !== '') {
-          analysis.result.rounds = results.data[i][0];
-          done = true;
-        }
-      }
+  if (solo_armada) {
+    analysis.who = players[0];
+  } else {
+    analysis.who = alliance;
+  }      
+  // battle summary
+  analysis.result = {};
+  // checking the result of the opponent
+  // defeat == victory for the player
+  var isVictory = getStringAllLocales('defeat').includes(results.data[armada_row][2]); 
+  analysis.result.outcome = isVictory?'outcome-v':'outcome-d';
+  var done = false;
+  for (var i = results.data.length-1; !done; i--) {
+    if (results.data[i][0] !== '') {
+      analysis.result.rounds = results.data[i][0];
+      done = true;
+    }
+  }
 
-      armada_analysis = { "intro": analysis, "details": {"headers":detailed_data_headers, "data":detailed_data, "armada": playerData(details, opponent, opponent, solo_armada)}};      
+  armada_analysis = { "intro": analysis, "details": {"headers":detailed_data_headers, "data":detailed_data, "armada": playerData(details, opponent, opponent, solo_armada)}};      
 }
 
 function playerData(details, p, vsx, isSolo) {

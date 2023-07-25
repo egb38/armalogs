@@ -9,6 +9,9 @@ Try it here: https://egb38.github.io/armalogs/
 
 ## Changes
 ### 20203/07/23
+* fix for group armada logs with a single attacker
+
+### 20203/07/23
 * i18n support
   * en, fr only (happy to accept contributions). 
   * Limitations: 
