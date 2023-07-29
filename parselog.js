@@ -18,7 +18,7 @@
 */
 
 // parse CSV log file
-function parseCSV(csv) {
+function parseAndSummarizeCSV(csv) {
   var _armada_analysis = null;
   var delim = ',';
   if (csv.search('\t')!=-1) {

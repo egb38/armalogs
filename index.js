@@ -18,20 +18,21 @@
 */
 
 var input;
-var divLogs;
+//var divLogs;
 
-// on load handler
+// when DOM ready define hte main handler
 window.onload = function() {
   input = document.querySelector("input");
-  divLogs = document.querySelector(".logs");
+  //divLogs = document.querySelector(".logs");
   
   input.addEventListener("change", armadaLogAnalysis);    
 }
 
+// general try/catch, display error message
 function onException (ex) { 
-  var err = document.createElement('pre');
-  var errMsg = document.createElement('div');
-  var errorBox = document.querySelector(".errorBox");
+  let err = document.createElement('pre');
+  let errMsg = document.createElement('div');
+  let errorBox = document.querySelector("#errorBox");
 
   err.textContent = ex.stack;
   errMsg.textContent = "Something went wrong!";
@@ -43,15 +44,15 @@ function onException (ex) {
   errorBox.style.display = 'block';
 }
 
-// main entry point, on file selected
+// main entry point: on file selected
 async function armadaLogAnalysis() {
   try {
     // load file in memory
-    var data = await loadCSV();
+    let data = await loadCSV();
     if (data!==null) {
       // main process
-      var armada_analysis = parseCSV(data);
-      displayData(divLogs, armada_analysis.intro, armada_analysis.details, armada_analysis.solo_armada);  
+      let armada_analysis = parseAndSummarizeCSV(data);
+      displayData("#logs", armada_analysis.intro, armada_analysis.details, armada_analysis.solo_armada);  
     }
   } catch(e) {
    onException(e); 

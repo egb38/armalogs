@@ -18,11 +18,11 @@
 */
 
 // display processed data
-function displayData(divLogs, summary, data, solo_armada) {
-  var divLog = document.createElement('div');
+function displayData(tagID, summary, data, solo_armada) {
+  let divLog = document.createElement('div');
   divLog.setAttribute('class', 'armada-battle');
   // title
-  var divtitle = document.createElement('div');
+  let divtitle = document.createElement('div');
   divtitle.textContent = solo_armada?getI18nContent('solo-armada'):getI18nContent('group-armada');
   divtitle.setAttribute('class', 'armada-title'); 
   divLog.appendChild(divtitle);
@@ -31,21 +31,21 @@ function displayData(divLogs, summary, data, solo_armada) {
   // main content
   divLog.appendChild(createTable(data));
 
+  let divLogs = document.querySelector(tagID);
   divLogs.appendChild(divLog);
 }
 
 // summary display generation
 // TODO proper/more extensive I18N
 function createSummary(summary) {
-  var summaryTable = document.createElement('table');
+  let summaryTable = document.createElement('table');
   if (summary.result.outcome == 'outcome-v') {
     summaryTable.setAttribute('class', 'blueTable'); 
   } else {
     summaryTable.setAttribute('class', 'redTable'); 
   }
-  var tableBody = document.createElement('tbody');
-  var row = document.createElement('tr');
-  var cell = document.createElement('th');
+  let row = document.createElement('tr');
+  let cell = document.createElement('th');
   cell.textContent = getI18nContent("battle");
   row.appendChild(cell);
   cell = document.createElement('th');
@@ -65,18 +65,18 @@ function createSummary(summary) {
 
 // analyzed log display generation
 function createTable(tableData) {
-  var table = document.createElement('table');
+  let table = document.createElement('table');
   table.setAttribute('class', 'armada-battle-log')
-  var tableHeader = document.createElement('thead');
-  var tableBody = document.createElement('tbody');
-  var tableFooter = document.createElement('tfoot');
+  let tableHeader = document.createElement('thead');
+  let tableBody = document.createElement('tbody');
+  let tableFooter = document.createElement('tfoot');
 
   // headers
   tableData.headers.forEach(function(rowData) {
-    var row = document.createElement('tr');
+    let row = document.createElement('tr');
 
     rowData.forEach(function(cellData) {
-      var cell = document.createElement('th');
+      let cell = document.createElement('th');
       cell.setAttribute('rowspan', cellData.rowspan)
       cell.setAttribute('colspan', cellData.colspan)
       cell.appendChild(document.createTextNode(cellData.label));
@@ -88,10 +88,10 @@ function createTable(tableData) {
 
   // body
   tableData.data.forEach(function(rowData) {
-    var row = document.createElement('tr');
+    let row = document.createElement('tr');
 
     rowData.forEach(function(cellData) {
-      var cell = document.createElement('td');
+      let cell = document.createElement('td');
       cell.appendChild(document.createTextNode(cellData));
       cell.setAttribute("style", "white-space: pre;")
       row.appendChild(cell);
@@ -101,9 +101,9 @@ function createTable(tableData) {
   });
 
   // armada / footer
-  var row = document.createElement('tr');
+  let row = document.createElement('tr');
   tableData.armada.forEach(function(cellData) {
-    var cell = document.createElement('td');
+    let cell = document.createElement('td');
     cell.appendChild(document.createTextNode(cellData));
     row.appendChild(cell);
   });
