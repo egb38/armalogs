@@ -36,7 +36,7 @@ function displayData(tagID, summary, data, solo_armada) {
 }
 
 // summary display generation
-// TODO proper/more extensive I18N
+// TODO more extensive I18N
 function createSummary(summary) {
   let summaryTable = document.createElement('table');
   if (summary.result.outcome == 'outcome-v') {
