@@ -8,6 +8,10 @@ Try it here: https://egb38.github.io/armalogs/
 
 
 ## Changes
+### 20203/07/30
+* small i18n enhancements
+* bare minimum support for it and de
+
 ### 20203/07/23
 * fix for group armada logs with a single attacker
 

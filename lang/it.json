@@ -20,8 +20,8 @@
     "loaded-weapon-50": "Loaded weapons at 50%",
     "loaded-weapon-100": "Loaded weapons at 100%",
 
-    "defeat": "DEFEAT",
-    "attack": "Attack",
-    "yes": "YES"
+    "defeat": "SCONF.",
+    "attack": "Attacco",
+    "yes": "SI"
 
 }

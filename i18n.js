@@ -20,8 +20,8 @@
 // inspired from https://phrase.com/blog/posts/step-step-guide-javascript-localization/
 
 // defaults to French
-var currentLocale = "fr";
-const supportedLocales = ["en", "fr"];
+var currentLocale = "en";
+const supportedLocales = ["en", "fr", "it", "de"];
 
 var allTranslations = [];
 

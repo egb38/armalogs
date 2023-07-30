@@ -96,10 +96,10 @@ function doParse(results) {
 
 
   headers = [];
-  headers.push({"label":getI18nContent('player'), "rowspan":1, "colspan":1}); // player
+  headers.push({"label":solo_armada?getI18nContent('ship'):getI18nContent('player'), "rowspan":1, "colspan":1}); // player
   headers.push({"label":getI18nContent('Rounds'), "rowspan":1, "colspan":1}); // # rounds
-  headers.push({"label":results.data[first-1][24] + " 100", "rowspan":1, "colspan":1}); // weapons charged 100%
-  headers.push({"label":results.data[first-1][24] + " 50", "rowspan":1, "colspan":1}); // weapons charged 50%
+  headers.push({"label":getI18nContent('loaded-weapon-100'), "rowspan":1, "colspan":1}); // weapons charged 100%
+  headers.push({"label":getI18nContent('loaded-weapon-50'), "rowspan":1, "colspan":1}); // weapons charged 50%
   // attack
   headers.push({"label":getI18nContent('attacks'), "rowspan":1, "colspan":1}); // # attacks
   headers.push({"label":getI18nContent('critical-hits'), "rowspan":1, "colspan":1}); // # critical hits
