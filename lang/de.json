@@ -1,0 +1,27 @@
+{
+    "app-title": "Star Trek Fleet Command, Battle log visualizer",
+    "file-selector": "Battle log:",
+    "solo-armada": "Solo armada",
+    "group-armada": "Group armada",
+    "outcome-d": "Defeat",
+    "outcome-v": "Victory",
+    "battle": "Battle",
+    "result": "Result",
+    "level": "level",
+    "in": "in",
+    "rounds": "round(s)",
+    "Rounds": "Rounds",
+    "defense": "Defense",
+    "player": "Player(s)",
+    "ship": "Ship(s)",
+    "attacks": "Attacks",
+    "attacks-received": "Received attacks",
+    "critical-hits": "Critical hits",
+    "loaded-weapon-50": "Loaded weapons at 50%",
+    "loaded-weapon-100": "Loaded weapons at 100%",
+
+    "defeat": "NIEDERLAGE",
+    "attack": "Angriff",
+    "yes": "JA"
+
+}
