@@ -1,5 +1,4 @@
-* proper localization, it currently works well only with French log files (and a bit with English ones) - thanks Scopely for those localizaed logs :-(
-* improve solo armada logs handling to list the ships used
-* more details on the armada attacked
+* more extensive localization to rely less on log file content
+* better handling of various types of logs (armada, solo armada, ship battle, station attack/defense...)
 * details on ships/deck abilities
 * ...
