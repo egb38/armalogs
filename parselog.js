@@ -28,7 +28,7 @@ function parseAndSummarizeCSV(csv) {
   Papa.parse(csv, 
     {
       complete: function(results) {
-        _armada_analysis = doParse(results); 
+        _armada_analysis = doProcess(results); 
       },
       delimiter: delim
     }
@@ -36,17 +36,28 @@ function parseAndSummarizeCSV(csv) {
   return _armada_analysis;
 }
 
-function doParse(results) {
+function doProcess(results) {
+
+  // if row 4 is empty, then ennemy = row 3 & ship
+  // if row 3 is empty, then ennemy = row 2 & aramada
+  // if aramada & #players==1 & rounds described by ship then solo aramada
+// -- Need logs from station attack & assault
+  
   var _armada_analysis = null;
   var solo_armada = false;
+  var armada = false;
+  var ship = false;
   var analysis = {};
 
   var armada_row = 1;
   if (results.data[2][0]!="") {
-    // against ship or single attacker for group armada
+    // against ship
     // in that case row idx=1 is about the player 
     // and row idx=2 is about the ship / armada
     armada_row = 2;
+    ship = true;
+  } else {
+    armada = true;
   }
 
   // oponent
@@ -56,7 +67,7 @@ function doParse(results) {
   // first row with rounds details
   var first = 0;
   for (var i=0; results.data[i][0]!=1; i++){ first = i+1;}
-  var details = results.data.slice(first);
+  var rounds_details = results.data.slice(first);
 
   // players/ships list
   var players = []; // to be used for group armada
@@ -64,21 +75,33 @@ function doParse(results) {
   var players_ship = []; // display name
   var alliance = null;
 
-  for (var i=0; details[i][0]==1; i++) {
-    if (!players.includes(details[i][3]) && details[i][3] != opponent) {
-      players.push(details[i][3]);
-      if (alliance==null) alliance = details[i][4];
+  for (var i=0; rounds_details[i][0]==1; i++) {
+    // list player names
+    var new_player = false;
+
+    var theplayer = rounds_details[i][3];
+    var theship = rounds_details[i][5];
+
+    if (!players.includes(theplayer) && theplayer != opponent) {
+      players.push(theplayer);
+      new_player = true;
+      if (alliance==null) alliance = rounds_details[i][4];
     }
-    var p_s = details[i][3] + "\u000a" + details[i][5];
-    if (!players_ship.includes(p_s) && details[i][3] != opponent) {
+    // store player+ship as well
+    var p_s = theplayer + "\u000a" + theship;
+    if (!players_ship.includes(p_s) && theplayer != opponent
+            // attempt to workaround the CSV file bug where the ship is a "defense platform"
+            // see https://github.com/egb38/armalogs/issues/15#issuecomment-1684833831
+            && !theship.startsWith(getI18nContent('defenseplatform'))
+          ) {
       players_ship.push(p_s);
     }
   }
   if (players.length==1 && players.length!=players_ship.length) {
     solo_armada = true;
-    for (var i=0; details[i][0]==1; i++) {
-      if (!ships.includes(details[i][5]) && details[i][3] != opponent) {
-        ships.push(details[i][5]);
+    for (var i=0; rounds_details[i][0]==1; i++) {
+      if (!ships.includes(theship) && theplayer != opponent) {
+        ships.push(theship);
       }
     }
   } else {
@@ -123,9 +146,9 @@ function doParse(results) {
   var detailed_data = [];
   players_ship.forEach((p, idx) => {
     if (solo_armada) {
-      detailed_data.push(playerData(details, ships[idx], "", true));
+      detailed_data.push(playerData(rounds_details, ships[idx], "", true));
     } else {
-      detailed_data.push(playerData(details, players[idx], players_ship[idx], false));
+      detailed_data.push(playerData(rounds_details, players[idx], players_ship[idx], false));
     }
   })
 
@@ -154,7 +177,7 @@ function doParse(results) {
     "details": {
       "headers":detailed_data_headers, 
       "data":detailed_data, 
-      "armada": playerData(details, opponent, opponent, solo_armada)
+      "armada": playerData(rounds_details, opponent, opponent, solo_armada)
     }
   };      
 
