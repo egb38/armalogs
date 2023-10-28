@@ -113,8 +113,8 @@ function doProcess(results) {
   // headers
   var headers = [];
   headers.push({"label":"", "rowspan":1, "colspan":4});
-  headers.push({"label":getI18nContent('attack'), "rowspan":1, "colspan":7});
-  headers.push({"label":getI18nContent('defense'), "rowspan":1, "colspan":7});
+  headers.push({"label":getI18nContent('attack'), "rowspan":1, "colspan":8});
+  headers.push({"label":getI18nContent('defense'), "rowspan":1, "colspan":8});
   detailed_data_headers.push(headers);
 
 
@@ -128,17 +128,19 @@ function doProcess(results) {
   headers.push({"label":getI18nContent('critical-hits'), "rowspan":1, "colspan":1}); // # critical hits
   headers.push({"label":results.data[first-1][16], "rowspan":1, "colspan":1}); // total damages
   headers.push({"label":results.data[first-1][14], "rowspan":1, "colspan":1}); // attenuated damages
-  headers.push({"label":results.data[first-1][15], "rowspan":1, "colspan":1}); // suppressed isolytic damages
   headers.push({"label":results.data[first-1][13], "rowspan":1, "colspan":1}); // shield damages
   headers.push({"label":results.data[first-1][12], "rowspan":1, "colspan":1}); // hull damages
+  headers.push({"label":results.data[first-1][17], "rowspan":1, "colspan":1}); // isolytic damages
+  headers.push({"label":results.data[first-1][15], "rowspan":1, "colspan":1}); // suppressed isolytic damages
   //defense
   headers.push({"label":getI18nContent('attacks-received'), "rowspan":1, "colspan":1});
   headers.push({"label":getI18nContent('critical-hits'), "rowspan":1, "colspan":1});
   headers.push({"label":results.data[first-1][16], "rowspan":1, "colspan":1});
   headers.push({"label":results.data[first-1][14], "rowspan":1, "colspan":1});
-  headers.push({"label":results.data[first-1][15], "rowspan":1, "colspan":1});
   headers.push({"label":results.data[first-1][13], "rowspan":1, "colspan":1});
   headers.push({"label":results.data[first-1][12], "rowspan":1, "colspan":1});
+  headers.push({"label":results.data[first-1][17], "rowspan":1, "colspan":1});
+  headers.push({"label":results.data[first-1][15], "rowspan":1, "colspan":1});
 
   detailed_data_headers.push(headers);
 
@@ -197,16 +199,18 @@ function playerData(details, p, vsx, isSolo) {
   a[i++] = countVals(details, p, checkAttackOn, 11, getStringAllLocales('yes')); // # critical attacks
   a[i++] = sumVal(details, p, checkAttackOn, 16); // # total damages given
   a[i++] = sumVal(details, p, checkAttackOn, 14); // # attenuated damages
-  a[i++] = sumVal(details, p, checkAttackOn, 15); // # iso damages
   a[i++] = sumVal(details, p, checkAttackOn, 13); // # shield damage
   a[i++] = sumVal(details, p, checkAttackOn, 12); // # hull damage
+  a[i++] = sumVal(details, p, checkAttackOn, 17); // # total iso damages
+  a[i++] = sumVal(details, p, checkAttackOn, 15); // # iso damages suppressed
   a[i++] = countVals(details, p, checkDefenseOn, 2, getStringAllLocales('attack')); // # attacks received
   a[i++] = countVals(details, p, checkDefenseOn, 11, getStringAllLocales('yes')); // # critical attacks received
   a[i++] = sumVal(details, p, checkDefenseOn, 16); // # total damages received
   a[i++] = sumVal(details, p, checkDefenseOn, 14); // # attenuated damages
-  a[i++] = sumVal(details, p, checkDefenseOn, 15); // # iso damages suppressed
   a[i++] = sumVal(details, p, checkDefenseOn, 13); // # shield damage
   a[i++] = sumVal(details, p, checkDefenseOn, 12); // # hull damage
+  a[i++] = sumVal(details, p, checkDefenseOn, 17); // # total iso damages
+  a[i++] = sumVal(details, p, checkDefenseOn, 15); // # iso damages suppressed
   
   return a;
 }
