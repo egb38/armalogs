@@ -19,6 +19,10 @@ Try it here: https://egb38.github.io/armalogs/
 * ...
 
 ## Changes
+### 20203/10/28
+* Workaround for the broken CSV log ("Defense Platform")
+* Support for the newer column for total isolytics damages
+
 ### 20203/07/30
 * small i18n enhancements
 * bare minimum support for it and de
