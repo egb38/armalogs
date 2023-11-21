@@ -100,8 +100,8 @@ function doProcess(results) {
   if (players.length==1 && players.length!=players_ship.length) {
     solo_armada = true;
     for (var i=0; rounds_details[i][0]==1; i++) {
-      if (!ships.includes(theship) && theplayer != opponent) {
-        ships.push(theship);
+      if (!ships.includes(rounds_details[i][5]) && rounds_details[i][3] != opponent) {
+        ships.push(rounds_details[i][5]);
       }
     }
   } else {
