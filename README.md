@@ -19,6 +19,9 @@ Try it here: https://egb38.github.io/armalogs/
 * ...
 
 ## Changes
+### 20203/11/21
+* Fix #18 solo armadas are broken
+
 ### 20203/10/28
 * Workaround for the broken CSV log ("Defense Platform")
 * Support for the newer column for total isolytics damages
