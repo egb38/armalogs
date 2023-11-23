@@ -18,12 +18,12 @@
 */
 
 // display processed data
-function displayData(tagID, summary, data, solo_armada) {
+function displayData(tagID, summary, data, battle_type) {
   let divLog = document.createElement('div');
   divLog.setAttribute('class', 'armada-battle');
   // title
   let divtitle = document.createElement('div');
-  divtitle.textContent = solo_armada?getI18nContent('solo-armada'):getI18nContent('group-armada');
+  divtitle.textContent = getI18nContent(battle_type);
   divtitle.setAttribute('class', 'armada-title'); 
   divLog.appendChild(divtitle);
   // summary
