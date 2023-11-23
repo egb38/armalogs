@@ -16,10 +16,17 @@ Try it here: https://egb38.github.io/armalogs/
 ## Todo
 * see limitations above
 * add details on ships/officer abilities
+* add some nav capabilities when several logs have been uploaded
+* add support for station battle logs, assaults, ...
 * ...
 
 ## Changes
-### 20203/11/21
+### 2023/11/22
+* Better support of ship vs ship battle logs
+* some code refactoring to make reading it easier (looong way to go)
+* latest uploaded log inserted at the top of the screen
+
+### 2023/11/21
 * Fix #18 solo armadas are broken
 
 ### 20203/10/28

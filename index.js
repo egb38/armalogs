@@ -52,7 +52,7 @@ async function armadaLogAnalysis() {
     if (data!==null) {
       // main process
       let armada_analysis = parseAndSummarizeCSV(data);
-      displayData("#logs", armada_analysis.intro, armada_analysis.details, armada_analysis.solo_armada);  
+      displayData("#logs", armada_analysis.intro, armada_analysis.details, armada_analysis.battle_type);  
     }
   } catch(e) {
    onException(e); 
