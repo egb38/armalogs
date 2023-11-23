@@ -208,12 +208,12 @@ function doProcess(results) {
   return _armada_analysis;
 }
 
-function playerData(details, p, vsx, battle_type) {
+function playerData(details, p, display, battle_type) {
   var a = [];
   var i = 0;
   var checkAttackOn = (battle_type=="solo_armada")?5:3; // if solo armada, use the ship name to aggregate data instead of player name
   var checkDefenseOn = (battle_type=="solo_armada")?9:7; // if solo armada, use the ship name to aggregate data instead of player name
-  a[i++] = (battle_type=="solo_armada" || battle_type=="ship")?vsx:p;
+  a[i++] = display;
   a[i++] = maxVal(details, p, checkAttackOn, 0); // max round
   a[i++] = countVal(details, p, checkAttackOn, 24, "100"); // # weapon recharge 100%
   a[i++] = countVal(details, p, checkAttackOn, 24, "50"); // # weapon recharge 50%
