@@ -32,7 +32,7 @@ function displayData(tagID, summary, data, battle_type) {
   divLog.appendChild(createTable(data));
 
   let divLogs = document.querySelector(tagID);
-  divLogs.appendChild(divLog);
+  divLogs.insertBefore(divLog, divLogs.firstChild);
 }
 
 // summary display generation
