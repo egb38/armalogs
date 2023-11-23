@@ -21,10 +21,13 @@ Try it here: https://egb38.github.io/armalogs/
 * ...
 
 ## Changes
-### next
+### 2023/11/22
 * Better support of ship vs ship battle logs
 * some code refactoring to make reading it easier (looong way to go)
 * latest uploaded log inserted at the top of the screen
+
+### 2023/11/21
+* Fix #18 solo armadas are broken
 
 ### 20203/10/28
 * Workaround for the broken CSV log ("Defense Platform")
