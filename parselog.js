@@ -53,75 +53,21 @@ function doProcess(results) {
     rounds_details = results.data.slice(first);
   }
 
-  // determine battle type, opponnent type
-  var battle_type;
-  var opponent_type;
-  var opponent_row = 1;
-  if (results.data[2][0]!="") {
-    // against ship / station
-    //   row idx=1 is about the player 
-    //   row idx=2 is about the ship / station
-    opponent_row = 2;
-    if (results.data[2][4]=="--") {
-      battle_type = "station"
-      opponent_type = player
-    } else {
-      battle_type = "ship"
-    }
-  } else {
-    // other types (group armada, solo armada, assault...) are determined later
-    battle_type = "group_armada"
-    opponent_type = "engine"
-  }
+  let {battle_type, opponent_type, opponent_row, opponent} = getBattleTypeAndOpponentType(results.data);
 
-  // oponent details
-  var opponent = results.data[opponent_row][0];
-  analysis.against = { "opponent": opponent, "level": results.data[opponent_row][1]}; 
-  
-  // build players/ships lists
-  var players = []; // to be used for group armada
-  var ships = []; // to be used for solo armada, ship, station
-  var players_ship = []; // display name
-  var opponent_ship = '';
-  var alliance = null;
-
-  for (var i=0; rounds_details[i][0]==1; i++) {
-    var theplayer = rounds_details[i][3];
-    var theship = rounds_details[i][5];
-
-    if (!players.includes(theplayer) && theplayer != opponent) {
-      players.push(theplayer);
-      if (alliance==null) 
-        alliance = rounds_details[i][4];
-    }
-    // store player+ship as well
-    var p_s = theplayer + "\u000a" + theship;
-    if (!players_ship.includes(p_s) 
-            && theplayer != opponent
-            // attempt to workaround the CSV file bug where the ship is a "defense platform"
-            // see https://github.com/egb38/armalogs/issues/15#issuecomment-1684833831
-            && !theship.startsWith(getI18nContent('defenseplatform'))
-          ) {
-      players_ship.push(p_s);
-    }
-    if (theplayer==opponent) {
-      opponent_ship = theship;
-    }
-  }
+  let { players, ships, players_ship, opponent_ship, alliance, opponent_alliance } 
+          = gatherBattleParticipantDetails(rounds_details, opponent, battle_type);
+  // adjust battle_type
   if (players.length==1 && players.length!=players_ship.length) {
     // caveat: will not work when attacking a solo armada with only 1 ship
     //         (or 2 identical ships maybe???)
     battle_type = "solo_armada";
   }
-  if (battle_type=="solo_armada" || battle_type=="ship") {
-    for (var i=0; rounds_details[i][0]==1; i++) {
-      if (!ships.includes(rounds_details[i][5]) && rounds_details[i][3] != opponent) {
-        ships.push(rounds_details[i][5]);
-      }
-    }
-  }
-  analysis.players = {"player": players, "players_ship": players_ship };
+  // TODO adjust opponent type for ship battles
 
+  // TODO expand with player / ships details
+  // unused at the moment
+  //analysis.players = {"player": players, "players_ship": players_ship };
 
   var detailed_data_headers = [];
   // build summary table headers
@@ -162,10 +108,13 @@ function doProcess(results) {
   var player_detailed_data = [];
   players_ship.forEach((p, idx) => {
     if (battle_type=="solo_armada") {
+      // aggregate on ship, display ship
       player_detailed_data.push(playerData(rounds_details, ships[idx], ships[idx], battle_type));
     } else if (battle_type=="ship") {
+      // aggregate on player, display ship
       player_detailed_data.push(playerData(rounds_details, players[idx], ships[idx], battle_type));
     } else {
+      // aggregate player ship, display player+ship
       player_detailed_data.push(playerData(rounds_details, players[idx], players_ship[idx], battle_type));
     }
   })
@@ -173,16 +122,23 @@ function doProcess(results) {
   // opponnent battle data gathering
   var opponent_detailed_data = playerData(rounds_details, opponent, opponent_ship, battle_type)
   
+  // what to show in the "vs" header
   if (battle_type=="group_armada") { // probably need to add assault?
-    analysis.who = alliance;
+    analysis.who = "[" + alliance + "]";
   } else {
-    analysis.who = players[0];
-  }      
-  
+    analysis.who = "[" + alliance + "] " + players[0];
+  }
+  if (opponent_alliance!=undefined) {
+    analysis.against = { "opponent": "[" + opponent_alliance + "] " + opponent, "level": results.data[opponent_row][1]}; 
+  } else {
+    analysis.against = { "opponent": opponent, "level": results.data[opponent_row][1]}; 
+  }
+
   // battle summary
   analysis.result = {};
   // checking the result of the opponent
-  // defeat == victory for the player
+  // opponent defeat == victory for the player
+  // (for group armada, there is a result only for the opponent)
   var isVictory = getStringAllLocales('defeat').includes(results.data[opponent_row][2]); 
   analysis.result.outcome = isVictory?'outcome-v':'outcome-d';
   // getting the number of rounds
@@ -206,6 +162,92 @@ function doProcess(results) {
   };      
 
   return _armada_analysis;
+}
+
+function getBattleTypeAndOpponentType(results_data) {
+  // determine battle type and get opponnent details
+  var battle_type;
+  var opponent_type;
+  var opponent_row = 1;
+  if (results_data[2][0]!="") {
+    // against ship / station
+    //   row idx=1 is about the player 
+    //   row idx=2 is about the ship / station
+    opponent_row = 2;
+    if (results_data[2][4]=="--") {
+      battle_type = "station"
+      opponent_type = "player"
+    } else {
+      battle_type = "ship"
+      // TODO need to determine the opponent type - no good way to do it (me think)
+    }
+  } else {
+    // other types (group armada, solo armada, assault...) are determined later
+    battle_type = "group_armada"
+    opponent_type = "engine"
+  }
+
+  // oponent details
+  var opponent = results_data[opponent_row][0];
+
+  return { battle_type, opponent_type, opponent_row, opponent}
+}
+
+function gatherBattleParticipantDetails(rounds_details, opponent, battle_type) {
+  // build players/ships lists
+  var players = []; // to be used for group armada
+  var ships = []; // to be used for solo armada, ship, station
+  var players_ship = []; // display name
+  var opponent_ship = '';
+  var alliance = null;
+
+  for (var i=0; rounds_details[i][0]==1; i++) {
+    var theplayer = rounds_details[i][3];
+    var theship = rounds_details[i][5];
+
+    if (!players.includes(theplayer) && theplayer != opponent) {
+      players.push(theplayer);
+      if (alliance==null) 
+        alliance = rounds_details[i][4];
+    }
+    // store player+ship as well
+    var p_s = theplayer + "\u000a" + theship;
+    if (!players_ship.includes(p_s) 
+            && theplayer != opponent
+            // attempt to workaround the CSV file bug where the ship is a "defense platform"
+            // see https://github.com/egb38/armalogs/issues/15#issuecomment-1684833831
+            && !theship.startsWith(getI18nContent('defenseplatform'))
+          ) {
+      players_ship.push(p_s);
+    }
+    if (theplayer==opponent) {
+      opponent_ship = theship;
+    }
+  }
+
+  if (players.length==1 && players.length!=players_ship.length) {
+    // caveat: will not work when attacking a solo armada with only 1 ship
+    //         (or 2 identical ships maybe???)
+    battle_type = "solo_armada";
+  }
+  if (battle_type=="solo_armada" || battle_type=="ship") {
+    for (var i=0; rounds_details[i][0]==1; i++) {
+      if (!ships.includes(rounds_details[i][5]) && rounds_details[i][3] != opponent) {
+        ships.push(rounds_details[i][5]);
+      }
+    }
+  }
+
+  var opponent_alliance;
+  if (battle_type=="ship" || battle_type=="station") {
+    for (let i=0; i<rounds_details.length && opponent_alliance==undefined; i++) {
+      if (rounds_details[i][3]==opponent) {
+        opponent_alliance = rounds_details[i][4];
+      }
+    }
+  }
+
+  return { players, ships, players_ship, opponent_ship, alliance, opponent_alliance };
 }
 
 function playerData(details, p, display, battle_type) {
