@@ -21,6 +21,10 @@ Try it here: https://egb38.github.io/armalogs/
 * ...
 
 ## Changes
+### 2023/11/24
+* code refactoring and small enhancements
+** did I already mention the log format is broooooooken and a pain to work with?
+
 ### 2023/11/22
 * Better support of ship vs ship battle logs
 * some code refactoring to make reading it easier (looong way to go)
