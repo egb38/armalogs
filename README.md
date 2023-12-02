@@ -21,7 +21,7 @@ Try it here: https://egb38.github.io/armalogs/
 * ...
 
 ## Changes
-### 2023/11/24
+### 2023/12/02
 * code refactoring and small enhancements
 * did I already mention the log format is broooooooken and a pain to work with?
 
