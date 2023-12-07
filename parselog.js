@@ -39,7 +39,7 @@ function parseAndSummarizeCSV(csv) {
 function doProcess(results) {
   var analysis = {};
 
-// -- Need logs from station attacks & assaults
+  // -- TODO Need logs from station attacks & assaults
   
   // find battle rounds details
   var first = 0;
@@ -180,6 +180,7 @@ function getBattleTypeAndOpponentType(results_data) {
     } else {
       battle_type = "ship"
       // TODO need to determine the opponent type - no good way to do it (me think)
+      // if opponent name is ""--" then it is probably an hostile/engine and not a player
     }
   } else {
     // other types (group armada, solo armada, assault...) are determined later
@@ -188,7 +189,7 @@ function getBattleTypeAndOpponentType(results_data) {
   }
 
   // oponent details
-  var opponent = results_data[opponent_row][0];
+  var opponent = results_data[opponent_row][0]=="--"?results_data[opponent_row][3]:results_data[opponent_row][0];
 
   return { battle_type, opponent_type, opponent_row, opponent}
 }
@@ -216,7 +217,7 @@ function gatherBattleParticipantDetails(rounds_details, opponent, battle_type) {
             && theplayer != opponent
             // attempt to workaround the CSV file bug where the ship is a "defense platform"
             // see https://github.com/egb38/armalogs/issues/15#issuecomment-1684833831
-            && !theship.startsWith(getI18nContent('defenseplatform'))
+            && !startsWithAnyLocal(theship, 'defenseplatform')
           ) {
       players_ship.push(p_s);
     }
@@ -241,7 +242,7 @@ function gatherBattleParticipantDetails(rounds_details, opponent, battle_type) {
   var opponent_alliance;
   if (battle_type=="ship" || battle_type=="station") {
     for (let i=0; i<rounds_details.length && opponent_alliance==undefined; i++) {
-      if (rounds_details[i][3]==opponent) {
+      if (rounds_details[i][3]==opponent && rounds_details[i][4]!="--") {
         opponent_alliance = rounds_details[i][4];
       }
     }
@@ -311,4 +312,14 @@ function maxVal(data, key, key_col_idx, data_col_idx) {
         max = row[data_col_idx];
       });
   return max;
+}
+
+function startsWithAnyLocal(aString, lngResource) {
+  resources = getStringAllLocales(lngResource);
+  for (let i=0; i<resources.length; i++) {
+    if (aString.startsWith(resources[i])) {
+      return true;
+    }
+  }
+  return false;
 }
