@@ -39,7 +39,7 @@ function parseAndSummarizeCSV(csv) {
 function doProcess(results) {
   var analysis = {};
 
-// -- Need logs from station attacks & assaults
+  // -- TODO Need logs from station attacks & assaults
   
   // find battle rounds details
   var first = 0;
@@ -216,7 +216,7 @@ function gatherBattleParticipantDetails(rounds_details, opponent, battle_type) {
             && theplayer != opponent
             // attempt to workaround the CSV file bug where the ship is a "defense platform"
             // see https://github.com/egb38/armalogs/issues/15#issuecomment-1684833831
-            && !theship.startsWith(getI18nContent('defenseplatform'))
+            && !startsWithAnyLocal(theship, 'defenseplatform')
           ) {
       players_ship.push(p_s);
     }
@@ -311,4 +311,14 @@ function maxVal(data, key, key_col_idx, data_col_idx) {
         max = row[data_col_idx];
       });
   return max;
+}
+
+function startsWithAnyLocal(aString, lngResource) {
+  resources = getStringAllLocales(lngResource);
+  for (let i=0; i<resources.length; i++) {
+    if (aString.startsWith(resources[i])) {
+      return true;
+    }
+  }
+  return false;
 }
