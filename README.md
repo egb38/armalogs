@@ -21,6 +21,10 @@ Try it here: https://egb38.github.io/armalogs/
 * ...
 
 ## Changes
+### 2023/12/07
+* Fix the "NaN" issue when mixinng languages (file & UI)
+* small fixes with ship VpE battles (missing ship name, hide alliance)
+
 ### 2023/12/02
 * code refactoring and small enhancements
 * did I already mention the log format is broooooooken and a pain to work with?
