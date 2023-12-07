@@ -180,6 +180,7 @@ function getBattleTypeAndOpponentType(results_data) {
     } else {
       battle_type = "ship"
       // TODO need to determine the opponent type - no good way to do it (me think)
+      // if opponent name is ""--" then it is probably an hostile/engine and not a player
     }
   } else {
     // other types (group armada, solo armada, assault...) are determined later
@@ -188,7 +189,7 @@ function getBattleTypeAndOpponentType(results_data) {
   }
 
   // oponent details
-  var opponent = results_data[opponent_row][0];
+  var opponent = results_data[opponent_row][0]=="--"?results_data[opponent_row][3]:results_data[opponent_row][0];
 
   return { battle_type, opponent_type, opponent_row, opponent}
 }
