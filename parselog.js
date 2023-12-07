@@ -242,7 +242,7 @@ function gatherBattleParticipantDetails(rounds_details, opponent, battle_type) {
   var opponent_alliance;
   if (battle_type=="ship" || battle_type=="station") {
     for (let i=0; i<rounds_details.length && opponent_alliance==undefined; i++) {
-      if (rounds_details[i][3]==opponent) {
+      if (rounds_details[i][3]==opponent && rounds_details[i][4]!="--") {
         opponent_alliance = rounds_details[i][4];
       }
     }
