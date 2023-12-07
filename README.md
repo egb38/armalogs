@@ -9,7 +9,7 @@ Try it here: https://egb38.github.io/armalogs/
 ## Limitations
 * armalogs localization partially log file content, this could be done in a more extensive way
 * it & de localizations are incomplete
-* not tested via base station attack logs & stellar station assault logs
+* not tested for station attack logs & stellar station assault logs
 * there are some bugs in Scopely CSV file generation (see open issues)
 * (also the CSV is a pain to work with, the format is all but usable, i would consider it as broken)
 
